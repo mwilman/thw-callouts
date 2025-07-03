@@ -105,6 +105,7 @@ body, html {
   display: block;
   color: #fff;
 }
+/* THW Workshop - Alle Lösungen implementiert */
 
 .stat-label {
   font-size: 0.875rem;
@@ -364,7 +365,136 @@ body, html {
   margin-top: 1.5rem;
 }
 
-/* Responsive Design */
+/* LÖSUNG AUFGABE 5: Löschen-Button */
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* LÖSUNG AUFGABE 4: Header-Controls Layout */
+.header-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* LÖSUNG AUFGABE 3: Verbesserte Resource-Items */
+.resource-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.resource-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.resource-name {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+/* BONUS: Prioritäts-Anzeige */
+.priority-indicator {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.priority-high {
+  background-color: #dc3545;
+  color: white;
+}
+
+.priority-medium {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.priority-low {
+  background-color: #28a745;
+  color: white;
+}
+
+/* ERWEITERTE Status-Badges */
+.status-new {
+  background-color: #007bff;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.status-in-progress {
+  background-color: #ffc107;
+  color: #212529;
+  animation: blink 1.5s infinite;
+}
+
+.status-completed {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Animationen für aktive Einsätze */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes blink {
+  0%, 50% { background-color: #ffc107; }
+  51%, 100% { background-color: #ff9800; }
+}
+
+/* ERWEITERTE Statistiken-Footer */
+.stats-footer {
+  background: linear-gradient(135deg, #003366, #004080);
+  color: white;
+  padding: 1.5rem;
+  border-top: 4px solid #007bff;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  min-width: 120px;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  display: block;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design für alle Lösungen */
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
@@ -401,6 +531,12 @@ body, html {
     grid-template-columns: 1fr;
   }
 
+  .header-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
   .form-buttons {
     flex-direction: column;
   }
@@ -430,6 +566,16 @@ body, html {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
   }
+
+  .resource-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .action-buttons {
+    flex-wrap: wrap;
+  }
 }
 
 /* Workshop-spezifische Klassen */
@@ -458,4 +604,27 @@ body, html {
   padding: 0.75rem;
   margin: 0.5rem 0;
   color: #155724;
+}
+
+/* BONUS: Hover-Effekte für Einsatz-Karten */
+.callout-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.callout-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* High-Priority Einsätze hervorheben */
+.callout-card[data-priority="high"] {
+  border-left: 4px solid #dc3545;
+}
+
+.callout-card[data-priority="medium"] {
+  border-left: 4px solid #ffc107;
+}
+
+.callout-card[data-priority="low"] {
+  border-left: 4px solid #28a745;
 }

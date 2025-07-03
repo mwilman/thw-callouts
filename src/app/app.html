@@ -13,33 +13,36 @@
 
   <!-- Main Content mit Padding für natürlichen Abstand -->
   <main class="main-content">
-    <!-- AUFGABE 1: Einsatzliste anzeigen -->
+    <!-- LÖSUNG AUFGABE 1: Einsatzliste mit korrekter ID-Anzeige -->
     <section class="callouts-section">
       <div class="section-header">
         <h2>Aktuelle Einsätze</h2>
-        <button class="btn btn-primary" (click)="showNewCalloutForm = !showNewCalloutForm">
-          📢 Neuer Einsatz
-        </button>
+        <div class="header-controls">
+          <!-- LÖSUNG AUFGABE 4: Filter für Einsätze -->
+          <button class="btn btn-secondary" (click)="toggleFilter()">
+            {{ showOnlyNew ? '👁️ Alle anzeigen' : '🆕 Nur neue Einsätze' }}
+          </button>
+          <button class="btn btn-primary" (click)="showNewCalloutForm = !showNewCalloutForm">
+            📢 Neuer Einsatz
+          </button>
+        </div>
       </div>
 
-      <!-- TODO für Schüler: Hier die Einsätze anzeigen -->
       <div class="callouts-grid">
-        <!-- WORKSHOP-AUFGABE: Schleife über callouts Array -->
-        <!-- Hinweis: Verwende *ngFor="let callout of callouts" -->
-        <div class="callout-card" *ngFor="let callout of callouts">
+        <!-- LÖSUNG: Korrekte ID-Anzeige und Filter-Implementierung -->
+        <div class="callout-card" *ngFor="let callout of getFilteredCallouts()">
           <div class="callout-header">
-            <span class="callout-id">#callout.id</span>
+            <span class="callout-id">#{{callout.id}}</span>
             <span class="status-badge" [class]="'status-' + callout.status">
-              {{callout.status}}
+              {{getStatusText(callout.status)}}
             </span>
           </div>
           <h3>{{callout.title}}</h3>
           <p class="location">📍 {{callout.location}}</p>
           <p class="time">🕒 {{callout.time}}</p>
 
-          <!-- AUFGABE 2: Status-Buttons hinzufügen -->
+          <!-- LÖSUNG: Status-Buttons mit verbesserter Logik -->
           <div class="action-buttons">
-            <!-- TODO: Buttons für Statusänderung -->
             <button class="btn btn-small btn-warning"
                     (click)="updateCalloutStatus(callout.id, 'in-progress')"
                     [disabled]="callout.status !== 'new'">
@@ -50,43 +53,62 @@
                     [disabled]="callout.status !== 'in-progress'">
               ✅ Abschließen
             </button>
+            <!-- LÖSUNG AUFGABE 5: Löschen-Button für abgeschlossene Einsätze -->
+            <button class="btn btn-small btn-danger"
+                    (click)="deleteCallout(callout.id)"
+                    [disabled]="callout.status !== 'completed'">
+              🗑️ Löschen
+            </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- AUFGABE 3: Neuen Einsatz hinzufügen -->
+    <!-- LÖSUNG AUFGABE 3: Erweitertes Formular -->
     <section class="new-callout-form" *ngIf="showNewCalloutForm">
       <h3>Neuen Einsatz erstellen</h3>
       <form (ngSubmit)="addNewCallout()">
         <div class="form-group">
           <label>Einsatzart:</label>
-          <!-- TODO für Schüler: Select-Feld mit Optionen -->
+          <!-- LÖSUNG AUFGABE 2: Brand als neue Option hinzugefügt -->
           <select [(ngModel)]="newCallout.title" name="title" required>
             <option value="">Bitte wählen...</option>
             <option value="Technische Hilfeleistung">Technische Hilfeleistung</option>
             <option value="Hochwasser">Hochwasser</option>
             <option value="Sturm">Sturm</option>
             <option value="Verkehrsunfall">Verkehrsunfall</option>
+            <option value="Brand">Brand</option>
+            <option value="Bergung">Bergung</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>Einsatzort:</label>
-          <!-- TODO: Input-Feld für Ort -->
           <input type="text" [(ngModel)]="newCallout.location" name="location"
                  placeholder="z.B. Hauptstraße 123, Musterstadt" required>
         </div>
 
+        <!-- BONUS: Priorität hinzugefügt -->
+        <div class="form-group">
+          <label>Priorität:</label>
+          <select [(ngModel)]="newCallout.priority" name="priority" required>
+            <option value="low">🟢 Niedrig</option>
+            <option value="medium">🟡 Mittel</option>
+            <option value="high">🔴 Hoch</option>
+          </select>
+        </div>
+
         <div class="form-buttons">
-          <button type="submit" class="btn btn-primary">Einsatz erstellen</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">
+            Einsatz erstellen
+          </button>
           <button type="button" class="btn btn-secondary"
-                  (click)="showNewCalloutForm = false">Abbrechen</button>
+                  (click)="cancelNewCallout()">Abbrechen</button>
         </div>
       </form>
     </section>
 
-    <!-- AUFGABE 4: Fahrzeuge und Personal -->
+    <!-- LÖSUNG AUFGABE 3: Fahrzeuge mit Status-Toggle -->
     <section class="resources-section">
       <h2>Verfügbare Ressourcen</h2>
 
@@ -94,12 +116,19 @@
         <div class="resource-card">
           <h3>🚛 Fahrzeuge</h3>
           <div class="resource-list">
-            <!-- TODO: Liste der Fahrzeuge -->
-            <div *ngFor="let vehicle of vehicles" class="resource-item">
-              <span class="resource-name">{{vehicle.name}}</span>
-              <span class="status-indicator" [class]="vehicle.available ? 'available' : 'busy'">
-                {{vehicle.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
-              </span>
+            <div *ngFor="let vehicle of vehicles; let i = index" class="resource-item">
+              <div class="resource-info">
+                <span class="resource-name">{{vehicle.name}}</span>
+                <span class="status-indicator" [class]="vehicle.available ? 'available' : 'busy'">
+                  {{vehicle.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
+                </span>
+              </div>
+              <!-- LÖSUNG: Toggle-Button für Fahrzeugstatus -->
+              <button class="btn btn-small"
+                      [class]="vehicle.available ? 'btn-warning' : 'btn-success'"
+                      (click)="toggleVehicleStatus(i)">
+                {{vehicle.available ? '🚛 Ausrücken' : '🏠 Zurück'}}
+              </button>
             </div>
           </div>
         </div>
@@ -107,12 +136,19 @@
         <div class="resource-card">
           <h3>👥 Personal</h3>
           <div class="resource-list">
-            <!-- TODO: Liste des Personals -->
-            <div *ngFor="let person of personnel" class="resource-item">
-              <span class="resource-name">{{person.name}} ({{person.role}})</span>
-              <span class="status-indicator" [class]="person.available ? 'available' : 'busy'">
-                {{person.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
-              </span>
+            <div *ngFor="let person of personnel; let i = index" class="resource-item">
+              <div class="resource-info">
+                <span class="resource-name">{{person.name}} ({{person.role}})</span>
+                <span class="status-indicator" [class]="person.available ? 'available' : 'busy'">
+                  {{person.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
+                </span>
+              </div>
+              <!-- BONUS: Toggle auch für Personal -->
+              <button class="btn btn-small"
+                      [class]="person.available ? 'btn-warning' : 'btn-success'"
+                      (click)="togglePersonnelStatus(i)">
+                {{person.available ? '👤 Ausrücken' : '🏠 Zurück'}}
+              </button>
             </div>
           </div>
         </div>
@@ -120,7 +156,7 @@
     </section>
   </main>
 
-  <!-- Footer bleibt im normalen Dokumentenfluss -->
+  <!-- ERWEITERTE Statistiken -->
   <footer class="stats-footer">
     <div class="stats-grid">
       <div class="stat-item">
@@ -134,6 +170,14 @@
       <div class="stat-item">
         <span class="stat-number">{{getCompletedCallouts()}}</span>
         <span class="stat-label">Abgeschlossen</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{getAvailableVehicles()}}</span>
+        <span class="stat-label">Fahrzeuge verfügbar</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{getAvailablePersonnel()}}</span>
+        <span class="stat-label">Personal verfügbar</span>
       </div>
     </div>
   </footer>
