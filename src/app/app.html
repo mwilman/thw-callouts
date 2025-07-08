@@ -30,83 +30,83 @@
 
       <div class="callouts-grid">
         <!-- LÖSUNG: Korrekte ID-Anzeige und Filter-Implementierung -->
-        <div class="callout-card" *ngFor="let callout of getFilteredCallouts()">
-          <div class="callout-header">
-            <span class="callout-id">#{{callout.id}}</span>
-            <span class="status-badge" [class]="'status-' + callout.status">
-              {{getStatusText(callout.status)}}
-            </span>
+        @for (callout of getFilteredCallouts(); track callout) {
+          <div class="callout-card">
+            <div class="callout-header">
+              <span class="callout-id">#{{callout.id}}</span>
+              <span class="status-badge" [class]="'status-' + callout.status">
+                {{getStatusText(callout.status)}}
+              </span>
+            </div>
+            <h3>{{callout.title}}</h3>
+            <p class="location">📍 {{callout.location}}</p>
+            <p class="time">🕒 {{callout.time}}</p>
+            <!-- LÖSUNG: Status-Buttons mit verbesserter Logik -->
+            <div class="action-buttons">
+              <button class="btn btn-small btn-warning"
+                (click)="updateCalloutStatus(callout.id, 'in-progress')"
+                [disabled]="callout.status !== 'new'">
+                ▶️ Starten
+              </button>
+              <button class="btn btn-small btn-success"
+                (click)="updateCalloutStatus(callout.id, 'completed')"
+                [disabled]="callout.status !== 'in-progress'">
+                ✅ Abschließen
+              </button>
+              <!-- LÖSUNG AUFGABE 5: Löschen-Button für abgeschlossene Einsätze -->
+              <button class="btn btn-small btn-danger"
+                (click)="deleteCallout(callout.id)"
+                [disabled]="callout.status !== 'completed'">
+                🗑️ Löschen
+              </button>
+            </div>
           </div>
-          <h3>{{callout.title}}</h3>
-          <p class="location">📍 {{callout.location}}</p>
-          <p class="time">🕒 {{callout.time}}</p>
-
-          <!-- LÖSUNG: Status-Buttons mit verbesserter Logik -->
-          <div class="action-buttons">
-            <button class="btn btn-small btn-warning"
-                    (click)="updateCalloutStatus(callout.id, 'in-progress')"
-                    [disabled]="callout.status !== 'new'">
-              ▶️ Starten
-            </button>
-            <button class="btn btn-small btn-success"
-                    (click)="updateCalloutStatus(callout.id, 'completed')"
-                    [disabled]="callout.status !== 'in-progress'">
-              ✅ Abschließen
-            </button>
-            <!-- LÖSUNG AUFGABE 5: Löschen-Button für abgeschlossene Einsätze -->
-            <button class="btn btn-small btn-danger"
-                    (click)="deleteCallout(callout.id)"
-                    [disabled]="callout.status !== 'completed'">
-              🗑️ Löschen
-            </button>
-          </div>
-        </div>
+        }
       </div>
     </section>
 
     <!-- LÖSUNG AUFGABE 3: Erweitertes Formular -->
-    <section class="new-callout-form" *ngIf="showNewCalloutForm">
-      <h3>Neuen Einsatz erstellen</h3>
-      <form (ngSubmit)="addNewCallout()">
-        <div class="form-group">
-          <label>Einsatzart:</label>
-          <!-- LÖSUNG AUFGABE 2: Brand als neue Option hinzugefügt -->
-          <select [(ngModel)]="newCallout.title" name="title" required>
-            <option value="">Bitte wählen...</option>
-            <option value="Technische Hilfeleistung">Technische Hilfeleistung</option>
-            <option value="Hochwasser">Hochwasser</option>
-            <option value="Sturm">Sturm</option>
-            <option value="Verkehrsunfall">Verkehrsunfall</option>
-            <option value="Brand">Brand</option>
-            <option value="Bergung">Bergung</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Einsatzort:</label>
-          <input type="text" [(ngModel)]="newCallout.location" name="location"
-                 placeholder="z.B. Hauptstraße 123, Musterstadt" required>
-        </div>
-
-        <!-- BONUS: Priorität hinzugefügt -->
-        <div class="form-group">
-          <label>Priorität:</label>
-          <select [(ngModel)]="newCallout.priority" name="priority" required>
-            <option value="low">🟢 Niedrig</option>
-            <option value="medium">🟡 Mittel</option>
-            <option value="high">🔴 Hoch</option>
-          </select>
-        </div>
-
-        <div class="form-buttons">
-          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">
-            Einsatz erstellen
-          </button>
-          <button type="button" class="btn btn-secondary"
-                  (click)="cancelNewCallout()">Abbrechen</button>
-        </div>
-      </form>
-    </section>
+    @if (showNewCalloutForm) {
+      <section class="new-callout-form">
+        <h3>Neuen Einsatz erstellen</h3>
+        <form (ngSubmit)="addNewCallout()">
+          <div class="form-group">
+            <label>Einsatzart:</label>
+            <!-- LÖSUNG AUFGABE 2: Brand als neue Option hinzugefügt -->
+            <select [(ngModel)]="newCallout.title" name="title" required>
+              <option value="">Bitte wählen...</option>
+              <option value="Technische Hilfeleistung">Technische Hilfeleistung</option>
+              <option value="Hochwasser">Hochwasser</option>
+              <option value="Sturm">Sturm</option>
+              <option value="Verkehrsunfall">Verkehrsunfall</option>
+              <option value="Brand">Brand</option>
+              <option value="Bergung">Bergung</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Einsatzort:</label>
+            <input type="text" [(ngModel)]="newCallout.location" name="location"
+              placeholder="z.B. Hauptstraße 123, Musterstadt" required>
+          </div>
+          <!-- BONUS: Priorität hinzugefügt -->
+          <div class="form-group">
+            <label>Priorität:</label>
+            <select [(ngModel)]="newCallout.priority" name="priority" required>
+              <option value="low">🟢 Niedrig</option>
+              <option value="medium">🟡 Mittel</option>
+              <option value="high">🔴 Hoch</option>
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">
+              Einsatz erstellen
+            </button>
+            <button type="button" class="btn btn-secondary"
+            (click)="cancelNewCallout()">Abbrechen</button>
+          </div>
+        </form>
+      </section>
+    }
 
     <!-- LÖSUNG AUFGABE 3: Fahrzeuge mit Status-Toggle -->
     <section class="resources-section">
@@ -116,40 +116,44 @@
         <div class="resource-card">
           <h3>🚛 Fahrzeuge</h3>
           <div class="resource-list">
-            <div *ngFor="let vehicle of vehicles; let i = index" class="resource-item">
-              <div class="resource-info">
-                <span class="resource-name">{{vehicle.name}}</span>
-                <span class="status-indicator" [class]="vehicle.available ? 'available' : 'busy'">
-                  {{vehicle.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
-                </span>
+            @for (vehicle of vehicles; track vehicle; let i = $index) {
+              <div class="resource-item">
+                <div class="resource-info">
+                  <span class="resource-name">{{vehicle.name}}</span>
+                  <span class="status-indicator" [class]="vehicle.available ? 'available' : 'busy'">
+                    {{vehicle.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
+                  </span>
+                </div>
+                <!-- LÖSUNG: Toggle-Button für Fahrzeugstatus -->
+                <button class="btn btn-small"
+                  [class]="vehicle.available ? 'btn-warning' : 'btn-success'"
+                  (click)="toggleVehicleStatus(i)">
+                  {{vehicle.available ? '🚛 Ausrücken' : '🏠 Zurück'}}
+                </button>
               </div>
-              <!-- LÖSUNG: Toggle-Button für Fahrzeugstatus -->
-              <button class="btn btn-small"
-                      [class]="vehicle.available ? 'btn-warning' : 'btn-success'"
-                      (click)="toggleVehicleStatus(i)">
-                {{vehicle.available ? '🚛 Ausrücken' : '🏠 Zurück'}}
-              </button>
-            </div>
+            }
           </div>
         </div>
 
         <div class="resource-card">
           <h3>👥 Personal</h3>
           <div class="resource-list">
-            <div *ngFor="let person of personnel; let i = index" class="resource-item">
-              <div class="resource-info">
-                <span class="resource-name">{{person.name}} ({{person.role}})</span>
-                <span class="status-indicator" [class]="person.available ? 'available' : 'busy'">
-                  {{person.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
-                </span>
+            @for (person of personnel; track person; let i = $index) {
+              <div class="resource-item">
+                <div class="resource-info">
+                  <span class="resource-name">{{person.name}} ({{person.role}})</span>
+                  <span class="status-indicator" [class]="person.available ? 'available' : 'busy'">
+                    {{person.available ? '✅ Verfügbar' : '🔴 Im Einsatz'}}
+                  </span>
+                </div>
+                <!-- BONUS: Toggle auch für Personal -->
+                <button class="btn btn-small"
+                  [class]="person.available ? 'btn-warning' : 'btn-success'"
+                  (click)="togglePersonnelStatus(i)">
+                  {{person.available ? '👤 Ausrücken' : '🏠 Zurück'}}
+                </button>
               </div>
-              <!-- BONUS: Toggle auch für Personal -->
-              <button class="btn btn-small"
-                      [class]="person.available ? 'btn-warning' : 'btn-success'"
-                      (click)="togglePersonnelStatus(i)">
-                {{person.available ? '👤 Ausrücken' : '🏠 Zurück'}}
-              </button>
-            </div>
+            }
           </div>
         </div>
       </div>
